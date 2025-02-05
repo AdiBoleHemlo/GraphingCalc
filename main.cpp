@@ -26,9 +26,9 @@ struct Coordinate {
 struct Equation {
 	long double d0 = 0;
 	long double d1 = 0.01;
-	long double d2 = 0.02;
-	long double d3 = 0.0001;
-	long double d4 = 0;
+	long double d2 = 0.002;
+	long double d3 = -0.001;
+	long double d4 = 0.00001;
 	long double d5 = 0;
 };
 
@@ -40,7 +40,8 @@ static void PaintPixel(SDL_Surface* surface, int x, int y, Uint32 color, int a =
 void DrawEquation (SDL_Surface* surface,Coordinate* origin, Equation* equation, Uint32 color) {
 	float xOld = 0;
 	long double yOld = 0;
-	for (float x = (-origin->x)/ SCALE_FACTOR; x <= (SCREEN_WIDTH - origin->x)/SCALE_FACTOR; x += 1){
+	for (float x = (-origin->x) / SCALE_FACTOR;
+		x <= (SCREEN_WIDTH - origin->x) / SCALE_FACTOR;) {
 		long double y = (
 			pow(x, 0) * equation->d0 +
 			pow(x, 1) * equation->d1 +
@@ -49,13 +50,14 @@ void DrawEquation (SDL_Surface* surface,Coordinate* origin, Equation* equation, 
 			pow(x, 4) * equation->d4 +
 			pow(x, 5) * equation->d5)*SCALE_FACTOR + origin->y;
 		PaintPixel(surface, int(x*SCALE_FACTOR + origin->x), SCREEN_HEIGHT - y, color);
+		if (SCALE_FACTOR <= 12) x += 0.1;
+		else x += 0.01;
 	}
 }
 
 void DrawOordinatesAndFooterLine (SDL_Surface* surface,Coordinate* origin, Uint32 color) {
 	for (float x = (-origin->x); x <= (SCREEN_WIDTH - origin->x); x += 1){
 		PaintPixel(surface, int(x + origin->x), SCREEN_HEIGHT - origin->y, color);
-		PaintPixel(surface, int(x + origin->x), SCREEN_HEIGHT - 50, COLOR_YELLOW);
 	}
 	for (float y = (-origin->y); y <= (SCREEN_WIDTH - origin->y); y += 1){
 		PaintPixel(surface, origin->x, int(y + origin->y), color);
@@ -69,7 +71,6 @@ int main(int argc, char* args[]) {
 	SDL_Delay(1000);
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_Rect blackScreen = SDL_Rect({ 0,0, SCREEN_WIDTH, SCREEN_HEIGHT });
-	SDL_Rect footer = SDL_Rect({ 0,SCREEN_HEIGHT - FOOTER_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT - FOOTER_HEIGHT });
 	SDL_Window* window = SDL_CreateWindow("Graphing Calculator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	SDL_Surface* surface = SDL_GetWindowSurface(window);
 
@@ -78,7 +79,6 @@ int main(int argc, char* args[]) {
 	while (runSim) {
 		DrawOordinatesAndFooterLine(surface, &origin, COLOR_WHITE);
 		DrawEquation(surface, &origin, &equation1, COLOR_PURPLE);
-		SDL_FillRect(surface, &footer, COLOR_BLACK);
 		PaintPixel(surface, origin.x,SCREEN_HEIGHT - origin.y, COLOR_YELLOW);
 		SDL_UpdateWindowSurface(window);
 		SDL_FillRect(surface, &blackScreen, COLOR_BLACK);
