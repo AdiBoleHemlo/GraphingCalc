@@ -53,6 +53,7 @@ void DrawEquation (SDL_Surface* surface,Coordinate* origin, Equation* equation, 
 		if (SCALE_FACTOR <= 12) x += 0.1;
 		else x += 0.01;
 	}
+	cout << SCALE_FACTOR << endl;
 }
 
 void DrawOordinatesAndFooterLine (SDL_Surface* surface,Coordinate* origin, Uint32 color) {
