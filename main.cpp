@@ -19,8 +19,8 @@ float SCALE_FACTOR = 1;
 
 
 struct Coordinate {
-	long double x = 0;
-	long double y = 51;
+	long double x = SCREEN_WIDTH/2;
+	long double y = SCREEN_HEIGHT/2;
 };
 
 struct Equation {
