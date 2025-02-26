@@ -3,26 +3,27 @@
 #include <vector>
 #include <math.h>
 #include <SDL.h>
-
 using namespace std;
 
-#define FOOTER_HEIGHT  49
-#define SCREEN_HEIGHT  800
-#define SCREEN_WIDTH   1600
-#define COLOR_BLACK    0x00000000
-#define COLOR_WHITE    0xffffffff
-#define COLOR_YELLOW   0x00F6ED36
-#define COLOR_PURPLE   0x00ab85ea
-#define COLOR_ORANGE   0x00fb5607
-#define COLOR_GREEN    0x00588157
-#define COLOR_RED      0x00ff0000
 
-float SCALE_FACTOR = 1;
+float SCALE_FACTOR         = 1;
+const int SCREEN_WIDTH     = 800;
+const int SCREEN_WIDTH     = 1600;
+const Uint32 COLOR_RED     = 0x00ff0000;
+const Uint32 COLOR_GREY    = 0x00606060;
+const Uint32 COLOR_GREEN   = 0x00588157;
+const Uint32 COLOR_BLACK   = 0x00000000;
+const Uint32 COLOR_WHITE   = 0xffffffff;
+const Uint32 COLOR_YELLOW  = 0x00F6ED36;
+const Uint32 COLOR_PURPLE  = 0x00ab85ea;
+const Uint32 COLOR_ORANGE  = 0x00fb5607;
+
 
 struct Coordinate {
     long double x = SCREEN_WIDTH / 2;
-    long double y = SCREEN_HEIGHT / 2;
+    long double y = SCREEN_WIDTH / 2;
 };
+
 typedef struct PolyEq {
     long double d0 = 0;
     long double d1 = 0;
@@ -32,6 +33,7 @@ typedef struct PolyEq {
     long double d5 = 0;
     Uint32 color = COLOR_RED;
 }PolyEq;
+
 typedef struct TrigEq {
     int FuncType = 0;
     long double CoeffA = 10;
@@ -44,7 +46,8 @@ static void PaintPixel(SDL_Surface* surface, int x, int y, Uint32 color, int a =
     SDL_Rect pixel = SDL_Rect({ x, y, a, a });
     SDL_FillRect(surface, &pixel, color);
     }
-void DrawEquation(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, PolyEq* equation, Uint32 color) {
+
+static void DrawEquation(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, PolyEq* equation, Uint32 color) {
     float Res = 15;
     if (SCALE_FACTOR > 1) Res = 15 * SCALE_FACTOR;
     else Res = 15;
@@ -58,10 +61,11 @@ void DrawEquation(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, 
             pow(a, 3) * equation->d3 +
             pow(a, 4) * equation->d4 +
             pow(a, 5) * equation->d5) * SCALE_FACTOR + origin->y;
-        PaintPixel(surface, int(a * SCALE_FACTOR + origin->x), SCREEN_HEIGHT - y, color);
+        PaintPixel(surface, int(a * SCALE_FACTOR + origin->x), SCREEN_WIDTH - y, color);
     }
 }
-void DrawEquation(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, TrigEq* equation, Uint32 color) {
+
+static void DrawEquation(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, TrigEq* equation, Uint32 color) {
     float Res = 15 * SCALE_FACTOR;
     for (float x = (-origin->x) * Res / SCALE_FACTOR; x <= (SCREEN_WIDTH - origin->x) * Res / SCALE_FACTOR; x++) {
         float a = x / Res;
@@ -75,36 +79,36 @@ void DrawEquation(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, 
         case 5: y = equation->CoeffA * atan(equation->CoeffX * a + equation->CoeffPhi) * SCALE_FACTOR + origin->y; break;
         default: break;
         }
-        PaintPixel(surface, int(a * SCALE_FACTOR + origin->x), SCREEN_HEIGHT - y, color);
+        PaintPixel(surface, int(a * SCALE_FACTOR + origin->x), SCREEN_WIDTH - y, color);
     }
 }
-void DrawOrdinateLine(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, Uint32 color) {
+
+static void DrawOrdinateLine(SDL_Window* window, SDL_Surface* surface, Coordinate* origin, Uint32 color) {
     float Res = 15;
     int pp = 150;
 
-    SDL_Rect line = { (int)origin->x,0,1,SCREEN_HEIGHT };
+    SDL_Rect line = { (int)origin->x,0,1,SCREEN_WIDTH };
     SDL_FillRect(surface, &line, color);
-    line = { (int)origin->x - 1,0,1,SCREEN_HEIGHT };
+    line = { (int)origin->x - 1,0,1,SCREEN_WIDTH };
     SDL_FillRect(surface, &line, color);
-    line = { (int)origin->x + 1,0,1,SCREEN_HEIGHT };
+    line = { (int)origin->x + 1,0,1,SCREEN_WIDTH };
     SDL_FillRect(surface, &line, color);
-    line = { 0,int(SCREEN_HEIGHT - origin->y),SCREEN_WIDTH,1 };
+    line = { 0,int(SCREEN_WIDTH - origin->y),SCREEN_WIDTH,1 };
     SDL_FillRect(surface, &line, color);
-    line = { 0,int(SCREEN_HEIGHT - origin->y - 1),SCREEN_WIDTH,1 };
+    line = { 0,int(SCREEN_WIDTH - origin->y - 1),SCREEN_WIDTH,1 };
     SDL_FillRect(surface, &line, color);
-    line = { 0,int(SCREEN_HEIGHT - origin->y + 1),SCREEN_WIDTH,1 };
+    line = { 0,int(SCREEN_WIDTH - origin->y + 1),SCREEN_WIDTH,1 };
     SDL_FillRect(surface, &line, color);
 
-    Uint32 COLOR_GREY = 0x00606060;
 
 
     if (SCALE_FACTOR >= 1) {
         for (float x = 0; x >= (-origin->x) * SCALE_FACTOR; x -= pp * SCALE_FACTOR) {
-            SDL_Rect line = { x + origin->x,0,1,SCREEN_HEIGHT };
+            SDL_Rect line = { x + origin->x,0,1,SCREEN_WIDTH };
             SDL_FillRect(surface, &line, COLOR_GREY);
         }
         for (float x = 0; x <= (SCREEN_WIDTH - origin->x) * SCALE_FACTOR; x += pp * SCALE_FACTOR) {
-            SDL_Rect line = { x + origin->x,0,1,SCREEN_HEIGHT };
+            SDL_Rect line = { x + origin->x,0,1,SCREEN_WIDTH };
             SDL_FillRect(surface, &line, COLOR_GREY);
         }
         //for (float y = (SCREEN_HEIGHT) * SCALE_FACTOR - origin->y; y >= 0; y -= pp * SCALE_FACTOR) {
@@ -116,31 +120,32 @@ void DrawOrdinateLine(SDL_Window* window, SDL_Surface* surface, Coordinate* orig
     }
     else {
         for (float x = 0; x >= (-origin->x) / SCALE_FACTOR; x -= pp * SCALE_FACTOR) {
-            SDL_Rect line = { x + origin->x,0,1,SCREEN_HEIGHT };
+            SDL_Rect line = { x + origin->x,0,1,SCREEN_WIDTH };
             SDL_FillRect(surface, &line, COLOR_GREY);
         }
         for (float x = 0; x <= (SCREEN_WIDTH - origin->x) / SCALE_FACTOR; x += pp * SCALE_FACTOR) {
-            SDL_Rect line = { x + origin->x,0,1,SCREEN_HEIGHT };
+            SDL_Rect line = { x + origin->x,0,1,SCREEN_WIDTH };
             SDL_FillRect(surface, &line, COLOR_GREY);
         }
     }
 
 }
-void DrawCoordinatesAndFooterLine(SDL_Surface* surface, Coordinate* origin, Uint32 color) {
+
+static void DrawCoordinatesAndHelperLines(SDL_Surface* surface, Coordinate* origin, Uint32 color) {
     for (float x = (-origin->x); x <= (SCREEN_WIDTH - origin->x); x += 1) {
-        PaintPixel(surface, int(x + origin->x), SCREEN_HEIGHT - origin->y, color);
+        PaintPixel(surface, int(x + origin->x), SCREEN_WIDTH - origin->y, color);
     }
     for (float y = (-origin->y); y <= (SCREEN_WIDTH - origin->y); y += 1) {
         PaintPixel(surface, origin->x, int(y + origin->y), color);
     }
 
     for (int x = 0; x <= SCREEN_WIDTH; x += 1) {
-        SDL_Rect scanline = SDL_Rect({ x, 0, 1, SCREEN_HEIGHT });
+        SDL_Rect scanline = SDL_Rect({ x, 0, 1, SCREEN_WIDTH });
         SDL_FillRect(surface, &scanline, color);
     }
 }
 
-void DrawFrame(SDL_Window* window, SDL_Surface* surface, Coordinate* origin,
+static void DrawFrame(SDL_Window* window, SDL_Surface* surface, Coordinate* origin,
     vector <TrigEq>* TrigEqs, vector <PolyEq>* PolyEqs) {
 
     for (PolyEq eq : *PolyEqs) {
@@ -152,7 +157,7 @@ void DrawFrame(SDL_Window* window, SDL_Surface* surface, Coordinate* origin,
 
 
     SDL_UpdateWindowSurface(window);
-    SDL_Rect screenn = SDL_Rect({0,0,SCREEN_WIDTH,SCREEN_HEIGHT });
+    SDL_Rect screenn = SDL_Rect({0,0,SCREEN_WIDTH,SCREEN_WIDTH });
     SDL_FillRect(surface, &screenn, COLOR_BLACK);
     DrawOrdinateLine(window, surface, origin, COLOR_WHITE);
 
@@ -193,11 +198,11 @@ static void ZoomAtMouse(SDL_Window* window, SDL_Surface* surface, SDL_Event* eve
 int main(int argc, char* args[]) {
     SDL_Delay(1000);
     SDL_Init(SDL_INIT_VIDEO);
-    SDL_Rect blackScreen = SDL_Rect({ 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT });
-    SDL_Window* window = SDL_CreateWindow("Graphing Calculator", 0, 30, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    SDL_Rect blackScreen = SDL_Rect({ 0, 0, SCREEN_WIDTH, SCREEN_WIDTH });
+    SDL_Window* window = SDL_CreateWindow("Graphing Calculator", 0, 30, SCREEN_WIDTH, SCREEN_WIDTH, 0);
     SDL_Surface* surface = SDL_GetWindowSurface(window);
-    int runSim = 1;
     SDL_Event event;
+    int runSim = 1;
 
     struct Coordinate origin;
 
